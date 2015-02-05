@@ -75,7 +75,7 @@ if [ "$1" = "config" ]; then
         print "memory.label memory";
         print "memory.draw LINE1";
         print "memory.info Amount of mem used by Redis";
-        print "rss.lable rss";
+        print "rss.label rss";
         print "rss.draw LINE1";
         print "rss.info Amount of rss mem used by Redis";
     };
