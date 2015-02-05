@@ -44,45 +44,38 @@ if [ "$1" = "config" ]; then
 
     /^keyspace_hits:/ {
         print "multigraph redis_commands";
+        print "graph_args --base 1000 -l 0"
         print "graph_order commands hits misses";
         print "graph_title Redis commands rate";
         print "graph_category redis";
         print "graph_vlabel commands/s";
         print "graph_info Redis commands per second";
         print "commands.label commands/s";
-        print "commands.type COUNTER";
-        print "commands.min 0";
+        print "commands.draw LINE1";
+        print "commands.info commands/s";
         print "hits.label key hits";
-        print "hits.type COUNTER";
-        print "hits.min 0";
+        print "hits.draw LINE1";
+        print "hits.info key hits";
         print "misses.label key misses";
-        print "misses.type COUNTER";
-        print "misses.min 0";
+        print "misses.draw LINE1";
+        print "misses.info key misses";
     };
 
-    /^total_connections_received:/ {
-        print "multigraph redis_total_connections";
-        print "graph_title Redis connections rate";
-        print "graph_category redis";
-        print "graph_vlabel connections/s";
-        print "graph_info Connections per second to the Redis server";
-        print "connections.label connections";
-        print "connections.info connections per second";
-        print "connections.type COUNTER";
-        print "connections.min 0";
-    };
 
     /^used_memory:/ {
         print "multigraph redis_memory";
+        print "graph_args --base 1024 -l 0";
+        print "graph_order memory rss"
         print "graph_title Redis memory usage";
         print "graph_category redis";
         print "graph_vlabel mem used";
         print "graph_info Memory allocated by Redis";
-        print "graph_args --base 1024 -l 0";
         print "memory.label memory";
+        print "memory.draw LINE1";
         print "memory.info Amount of mem used by Redis";
-        print "memory.type GAUGE";
-        print "memory.min 0";
+        print "rss.lable rss";
+        print "rss.draw LINE1";
+        print "rss.info Amount of rss mem used by Redis";
     };
 
     /^connected_clients:/ {
@@ -92,8 +85,7 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel clients";
         print "graph_info Number of currently connected clients";
         print "clients.label clients";
-        print "clients.type GAUGE";
-        print "clients.min 0";
+        print "clients.draw LINE1";
     };
 
     /^mem_fragmentation_ratio:/ {
@@ -103,8 +95,7 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel fragmentation ratio";
         print "graph_info Ratio between Redis RSS usage and allocated memory";
         print "frag.label fragmentation ratio";
-        print "frag.type GAUGE";
-        print "frag.min 0";
+        print "frag.draw LINE1";
     };
 
     /^expired_keys:/ {
@@ -114,9 +105,8 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel expired keys/s";
         print "graph_info Expired Redis keys per second";
         print "expired.label expired keys";
+        print "expired.draw LINE1";
         print "expired.info expired keys per second";
-        print "expired.type COUNTER";
-        print "expired.min 0";
     };
 
     /^evicted_keys:/ {
@@ -126,9 +116,8 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel evicted keys/s";
         print "graph_info Evicted Redis keys per second";
         print "evicted.label evicted keys";
+        print "evicted.draw LINE1";
         print "evicted.info evicted keys per second";
-        print "evicted.type COUNTER";
-        print "evicted.min 0";
     };
 
     /^pubsub_channels:/ {
@@ -138,8 +127,7 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel channels";
         print "graph_info Number of pubsub channels";
         print "channels.label channels";
-        print "channels.type GAUGE";
-        print "channels.min 0";
+        print "channels.draw LINE1";
     };
 
     /^blocked_clients:/ {
@@ -149,8 +137,7 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel clients";
         print "graph_info Number of blocked clients";
         print "blocked.label clients";
-        print "blocked.type GAUGE";
-        print "blocked.min 0";
+        print "blocked.draw LINE1";
         print "blocked.warning 1";
     };
 
@@ -162,6 +149,7 @@ if [ "$1" = "config" ]; then
 
     END {
         print "multigraph redis_dbs";
+        print "graph_args --base 1000 -l 0"
         print "graph_title Redis dbs";
         print "graph_category redis";
         print "graph_vlabel keys";
@@ -169,11 +157,9 @@ if [ "$1" = "config" ]; then
 
         for (i in dbskeys)
             print i "keys.label " i " keys"
-            print i "keys.type GAUGE"
-            print i "keys.min 0"
+            print i "keys.draw LINE1"
             print i "expires.label " i " expired keys"
-            print i "expires.type GAUGE"
-            print i "expires.min 0";
+            print i "expires.draw LINE1"
     };
 
     '
@@ -187,14 +173,12 @@ redis-cli -h $ip -p $port $passwd info | awk -F: '
         print "changes.value " $2 ;
     };
 
-    /^total_connections_received:/ {
-        print "multigraph redis_total_connections";
-        print "connections.value " $2 ;
+    /^used_memory:/ {
+        memory=$2
     };
 
-    /^used_memory:/ {
-        print "multigraph redis_memory";
-        print "memory.value " $2 ;
+    /^used_memory_rss:/ {
+        rss=$2
     };
 
     /^connected_clients:/ {
@@ -246,6 +230,9 @@ redis-cli -h $ip -p $port $passwd info | awk -F: '
     };
 
     END {
+        print "multigraph redis_memory";
+        print "memory.value " memory;
+        print "rss.value " rss;
         print "multigraph redis_commands";
         print "commands.value " commands;
         print "hits.value " hits;
