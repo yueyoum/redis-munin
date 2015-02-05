@@ -53,14 +53,14 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel commands/s";
         print "graph_info Redis commands per second";
         print "commands.label commands/s";
-        print "commands.draw LINE1";
-        print "commands.info commands/s";
+        print "commands.type COUNTER";
+        print "commands.min 0";
         print "hits.label key hits";
-        print "hits.draw LINE1";
-        print "hits.info key hits";
+        print "hits.tyoe COUNTER";
+        print "hits.min 0";
         print "misses.label key misses";
-        print "misses.draw LINE1";
-        print "misses.info key misses";
+        print "misses.type COUNTER";
+        print "misses.min 0";
     };
 
 
@@ -107,8 +107,8 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel expired keys/s";
         print "graph_info Expired Redis keys per second";
         print "expired.label expired keys";
-        print "expired.draw LINE1";
-        print "expired.info expired keys per second";
+        print "expired.type COUNTER";
+        print "expired.min 0";
     };
 
     /^evicted_keys:/ {
@@ -118,8 +118,8 @@ if [ "$1" = "config" ]; then
         print "graph_vlabel evicted keys/s";
         print "graph_info Evicted Redis keys per second";
         print "evicted.label evicted keys";
-        print "evicted.draw LINE1";
-        print "evicted.info evicted keys per second";
+        print "evicted.type COUNTER";
+        print "evicted.min 0";
     };
 
     /^pubsub_channels:/ {
